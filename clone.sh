@@ -2,7 +2,7 @@
 #
 export PRGNAME=$(basename "$0" .sh)
 SCRIPTDIR=$(dirname "$0")
-DEFAULTSCRIPT="${SCRIPTDIR}/default_configuration.sh"
+DEFAULTSCRIPT="${SCRIPTDIR}/default_configuration"
 if [ -f "$DEFAULTSCRIPT" ] && [ -r "$DEFAULTSCRIPT" ] && [ -x "$DEFAULTSCRIPT" ] ; then
     . "$DEFAULTSCRIPT"
 else
@@ -48,7 +48,11 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
 elif [ -n "$1" ] ; then
     . "$2"
     PrintConfiguration
+    exit 0
 else
     ShowSyntax >&2
+    . "$DEFAULTSCRIPT"
+    printf "\n" >&2
+    PrintConfiguration >&2
     exit 0
 fi

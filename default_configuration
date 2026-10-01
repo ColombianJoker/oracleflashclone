@@ -1,3 +1,3 @@
-export DEBUG=true
+export DEBUG=false
 export STORAGEDEF=CRCCcolxvfs5k
 export VOLUMEGROUP=oradb
