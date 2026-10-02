@@ -79,7 +79,7 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     DetectAIXDisks
     printf " done\n" >&2
     printf "$PRGNAME: Database disks ---------------------------------------------\n" >&2
-    ListSnapshotDisks "$DISKPREFIX" >&2
+    ListSnapshotDisks "$VOLUMEPREFIX" >&2
 elif [ -n "$1" ] ; then
     . "$2"
     PrintConfiguration

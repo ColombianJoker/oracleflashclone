@@ -1,7 +1,8 @@
 export DEBUG=false
 export STORAGEDEF=CRCCcolxvfs5k
 export VOLUMEGROUP=oradb
-export DISKPREFIX=dbs_
+export VOLUMEPREFIX=dbs_
+export HDISKPREFIX=o
 
 
 ### --------- --------- --------- ---------
