@@ -54,6 +54,9 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     printf " done\n" >&2
     printf "$PRGNAME: Database disks ---------------------------------------------\n" >&2
     ListSnapshotDisks "$VOLUMEPREFIX" >&2
+    printf "\n" >&2
+    printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
+    ListFilteredMappedVolumes "$STORAGEHOSTNAME" dbs_
 elif [ -n "$1" ] ; then
     . "$2"
     PrintConfiguration

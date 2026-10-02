@@ -20,6 +20,15 @@ else
     exit 3
 fi
 
+VOLUMESCRIPT="${SCRIPTDIR}/flashsystem_volumes"
+if [ -f "$VOLUMESCRIPT" ] && [ -r "$VOLUMESCRIPT" ] && [ -x "$VOLUMESCRIPT" ] ; then
+    . "$VOLUMESCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the flashsystem volume script, exiting...\n" >&2
+    exit 3
+fi
+
 AIXPVSCRIPT="${SCRIPTDIR}/aix_physical_volumes"
 if [ -f "$AIXPVSCRIPT" ] && [ -r "$AIXPVSCRIPT" ] && [ -x "$AIXPVSCRIPT" ] ; then
     . "$AIXPVSCRIPT"

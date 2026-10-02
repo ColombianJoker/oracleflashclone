@@ -1,5 +1,17 @@
 #!/usr/bin/env ksh
 
+CheckFlashSystem () { [ -n "$DEBUG" ] && $DEBUG && set -x
+    if ssh -o ConnectTimeout=5 "$STORAGEDF" lsnodecanister 2>/dev/null ; then
+        true
+    else
+        set +x
+        printf "$PRGNAME: ************************************************\n" >&2
+        printf "$PRGNAME: Can't connect to '$STORAGEDEF', exiting ...\n" >&2
+        printf "$PRGNAME: ************************************************\n" >&2
+        exit 255
+    fi
+}
+
 CheckSnapshotExistence () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Checks if there is a snapshot with the chosen name given as argument $1
     if [ $# -eq 0 ] ; then
@@ -30,5 +42,7 @@ AddSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
 
 ### --------- --------- --------- ---------
 Loaded () {
-    printf "$PRGNAME: flashsystem_snapshots functions loaded.\n" >&2
+    printf "$PRGNAME: flashsystem snapshot functions loaded.\n" >&2
 }
+
+CheckFlashSystem

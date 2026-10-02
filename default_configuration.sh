@@ -1,4 +1,4 @@
-export DEBUG=false
+export DEBUG=true
 export STORAGEDEF=CRCCcolxvfs5k
 export VOLUMEGROUP=oradb
 export VOLUMEPREFIX=dbs_
