@@ -5,8 +5,18 @@ SCRIPTDIR=$(dirname "$0")
 DEFAULTSCRIPT="${SCRIPTDIR}/default_configuration"
 if [ -f "$DEFAULTSCRIPT" ] && [ -r "$DEFAULTSCRIPT" ] && [ -x "$DEFAULTSCRIPT" ] ; then
     . "$DEFAULTSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
 else
     printf "$PRGNAME: Could not load the default configuration, exiting...\n" >&2
+    exit 3
+fi
+
+SNAPSHOTSCRIPT="${SCRIPTDIR}/flashsystem_snapshots"
+if [ -f "$SNAPSHOTSCRIPT" ] && [ -r "$SNAPSHOTSCRIPT" ] && [ -x "$SNAPSHOTSCRIPT" ] ; then
+    . "$SNAPSHOTSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the snapshot script, exiting...\n" >&2
     exit 3
 fi
 
