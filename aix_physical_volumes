@@ -1,6 +1,6 @@
 #!/usr/bin/env ksh
 
-CheckAIXDiskExistence () { [ -n "$DEBUG" && $DEBUG && set -x
+CheckAIXDiskExistence () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Check if there is a disk with the chosen name $1
     if [ $# -eq 0 ] ; then
         false
@@ -13,9 +13,19 @@ CheckAIXDiskExistence () { [ -n "$DEBUG" && $DEBUG && set -x
     fi
 }
 
-DetectAIXDisks () {
+DetectAIXDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Detect all disks
     cfgmgr
+}
+
+ListSnapshotDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# List disks coming from volumes matching a prefix
+    if [ $# -eq 0 ] ; then
+        false
+    else
+        PREF="$1"
+        lsmpio -q | awk -v PREF="^$PREF" '$NF~PREF'
+    fi
 }
 
 ### --------- --------- --------- ---------
