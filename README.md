@@ -30,16 +30,20 @@ export STORAGEHOSTNAME=client host name of the server in flashsystem
 The script needs to access the FlashSystem thru SSH without passwords, then needs a minimal configuration including
 
 - **Host STORAGENAME**
-  That is the name used for the variable `STORAGEDEF` in the configuration
+
+That is the name used for the variable `STORAGEDEF` in the configuration
 
 - **Hostname IP_OR_DNS_NAME**
-  Where the script would be connecting
+
+Where the script would be connecting
 
 - **User USERNAME**
-  What user would be used. It needs admin permissions to create snapshots and map and unmap volumes.
+
+What user would be used. It needs admin permissions to create snapshots and map and unmap volumes.
 
 - **IdentityFile FILE**
-  Private key file to use to impede the use and asking of passwords
+
+Private key file to use to impede the use and asking of passwords
 
 Other recommended:
 
