@@ -20,12 +20,21 @@ else
     exit 3
 fi
 
+AIXPVSCRIPT="${SCRIPTDIR}/aix_physical_volumes"
+if [ -f "$AIXPVSCRIPT" ] && [ -r "$AIXPVSCRIPT" ] && [ -x "$AIXPVSCRIPT" ] ; then
+    . "$AIXPVSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the AIX pv script, exiting...\n" >&2
+    exit 3
+fi
+
 AIXVGSCRIPT="${SCRIPTDIR}/aix_volume_groups"
 if [ -f "$AIXVGSCRIPT" ] && [ -r "$AIXVGSCRIPT" ] && [ -x "$AIXVGSCRIPT" ] ; then
     . "$AIXVGSCRIPT"
     [ -n "$DEBUG" ] && $DEBUG && Loaded
 else
-    printf "$PRGNAME: Could not load the snapshot script, exiting...\n" >&2
+    printf "$PRGNAME: Could not load the AIX vg script, exiting...\n" >&2
     exit 3
 fi
 
@@ -64,6 +73,11 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
         ShowSyntax >&2
         exit 2
     fi
+
+    # ------------ MAIN ------------
+    printf "$PRGNAME: scanning..." >&2
+    DetectAIXDisks
+    printf " done\n" >&2
 elif [ -n "$1" ] ; then
     . "$2"
     PrintConfiguration

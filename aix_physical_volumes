@@ -1,0 +1,24 @@
+#!/usr/bin/env ksh
+
+CheckAIXDiskExistence () { [ -n "$DEBUG" && $DEBUG && set -x
+# Check if there is a disk with the chosen name $1
+    if [ $# -eq 0 ] ; then
+        false
+    else
+        PVNAME="$1"
+        lspv | awk -v N=$PVNAME '
+                $2==N {found=1; exit 0}
+                END {if(!found) exit 1} '
+
+    fi
+}
+
+DetectAIXDisks () {
+# Detect all disks
+    cfgmgr
+}
+
+### --------- --------- --------- ---------
+Loaded () {
+    printf "$PRGNAME: AIX physical volume functions loaded.\n" >&2
+}
