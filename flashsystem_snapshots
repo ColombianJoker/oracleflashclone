@@ -1,6 +1,6 @@
 #!/usr/bin/env ksh
 
-CheckExistence () { [ -n "$DEBUG" ] && $DEBUG && set -x
+CheckSnapshotExistence () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Checks if there is a snapshot with the chosen name given as argument $1
     if [ $# -eq 0 ] ; then
         false
@@ -20,7 +20,7 @@ AddSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
     else
         VGNAME="$1" SNAPNAME="$2"
         ssh "$STORAGEDEF" addsnapshot -volumegroup "$VGNAME" -name "$SNAPNAME"
-        if CheckExistence "$SNAPNAME" ; then
+        if CheckSnapshotExistence "$SNAPNAME" ; then
             true
         else
             false

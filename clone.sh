@@ -20,6 +20,15 @@ else
     exit 3
 fi
 
+AIXVGSCRIPT="${SCRIPTDIR}/aix_volume_groups"
+if [ -f "$AIXVGSCRIPT" ] && [ -r "$AIXVGSCRIPT" ] && [ -x "$AIXVGSCRIPT" ] ; then
+    . "$AIXVGSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the snapshot script, exiting...\n" >&2
+    exit 3
+fi
+
 ShowSyntax () {
     printf "$PRGNAME creates clones of databases on FlashSystems\n"
     printf "Syntax:\n"
