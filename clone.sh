@@ -35,26 +35,23 @@ PrintConfiguration () {
 
 if [ -n "$1" ] && [ "$1" == "do" ] ; then
     if [ -n "$2" ] ; then
-        printf "$PRGNAME: trying to use '$2' for configuration...\n" >&2
+        printf "$PRGNAME: Trying to use '$2' for configuration...\n" >&2
         if [ -f "$2" ] && [ -r "$2" ] && [ -x "$2" ] ; then
             . "$2"
         else
-            printf "$PRGNAME: could not use '$2', check existence, and rx mode...\n" >&2
+            printf "$PRGNAME: Could not use '$2', check existence, and rx mode...\n" >&2
             exit 1
         fi
     else
-        printf "$PRGNAME: too few arguments!\n" >&2
+        printf "$PRGNAME: Too few arguments!\n" >&2
         ShowSyntax >&2
         exit 2
     fi
 
     # ------------ MAIN ------------
-    printf "$PRGNAME: scanning..." >&2
+    printf "$PRGNAME: Scanning..." >&2
     DetectAIXDisks
     printf " done\n" >&2
-    printf "$PRGNAME: Database disks ---------------------------------------------\n" >&2
-    ListSnapshotDisks "$VOLUMEPREFIX" >&2
-    printf "\n" >&2
     printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
     ListFilteredMappedVolumes "$STORAGEHOSTNAME" dbs_
 elif [ -n "$1" ] ; then
