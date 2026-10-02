@@ -12,14 +12,17 @@ This scripts after loading all auxiliary functions connects to an IBM FlashSyste
 - It needs a configuration file that includes the variables
 
 ```sh
+
 export DEBUG=true|false
 export STORAGEDEF=name of storage in ~/.ssh/config
 export VOLUMEGROUP=flashsystem volume group to clone
 export VOLUMEPREFIX=prefix of the names of the volumes in the volumegroup
 export HDISKPREFX=prefix of the names of the hdisk devices
 export STORAGEHOSTNAME=client host name of the server in flashsystem
+
 # STORAGEHOSTNAME is optional, if not given it will use the hostname of the
 #  AIX server
+#
 ```
 
 ---
