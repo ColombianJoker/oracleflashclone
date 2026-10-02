@@ -5,9 +5,9 @@ CheckFlashSystem () { [ -n "$DEBUG" ] && $DEBUG && set -x
         true
     else
         set +x
-        printf "$PRGNAME: ************************************************\n" >&2
-        printf "$PRGNAME: Can't connect to '$STORAGEDEF', exiting ...\n" >&2
-        printf "$PRGNAME: ************************************************\n" >&2
+        printf "$PRGNAME: *****************************************************\n" >&2
+        printf "$PRGNAME: * %-50s*\n" "Can't connect to '$STORAGEDEF', exiting ..." >&2
+        printf "$PRGNAME: *****************************************************\n" >&2
         exit 255
     fi
 }
