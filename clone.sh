@@ -29,6 +29,10 @@ PrintConfiguration () {
   printf "  DEBUG=$DEBUG\n"
   printf "  STORAGEDEF=$STORAGEDEF\n"
   printf "  VOLUMEGROUP=$VOLUMEGROUP\n"
+  printf "  VOLUMEPREFIX=$VOLUMEPREFIX\n"
+  printf "  HDISKPREFIX=$HDISKPREFIX\n"
+  printf "  CLUSTERNODES=$CLUSTERNODES\n"
+  printf "  CLUSTERPORTS=$CLUSTERPORTS\n"
 }
 
 [ -n "$DEBUG" ] && $DEBUG && set -x
@@ -54,6 +58,8 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     printf " done\n" >&2
     printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
     ListFilteredMappedVolumes "$STORAGEHOSTNAME" dbs_
+    CleanRulesToBlockOut
+    AddRulesToBlockOut
 elif [ -n "$1" ] ; then
     . "$2"
     PrintConfiguration
