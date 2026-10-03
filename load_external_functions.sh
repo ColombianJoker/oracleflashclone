@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 
 [ -n "$DEBUG" ] && $DEBUG && printf "$PRGNAME: Loading external functions...\n" >&2
 

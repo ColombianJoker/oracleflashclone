@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 #
 export PRGNAME=$(basename "$0" .sh)
 
@@ -57,7 +57,9 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     DetectAIXDisks
     printf " done\n" >&2
     printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
-    ListFilteredMappedVolumes "$STORAGEHOSTNAME" dbs_
+    ListSnapshotDisks "$VOLUMEPREFIX" | while read hdiskname volname ; do
+        printf "$volname\t%s\n" $(CalculateHdiskName $volname) >&2
+    done
     CleanRulesToBlockOut
     AddRulesToBlockOut
 elif [ -n "$1" ] ; then

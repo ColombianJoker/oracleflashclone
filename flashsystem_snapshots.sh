@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 
 CheckFlashSystem () { [ -n "$DEBUG" ] && $DEBUG && set -x
     if ssh -o ConnectTimeout=5 "$STORAGEDEF" lsnodecanister >/dev/null 2>&1 ; then

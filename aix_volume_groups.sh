@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 
 CheckAIXVGExistence () { [ -n "$DEBUG" && $DEBUG && set -x
 # Check if there is a volumegroup with the chosen name $1

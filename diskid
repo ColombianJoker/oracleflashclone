@@ -1,0 +1,68 @@
+#!/usr/bin/env ksh93
+# Shows disk, LUN id, size, volume name, vuid
+export PRGNAME=$(basename "$0" .sh)
+export COMPACT=false
+export HEADER=true
+
+ShowSyntax () {
+  printf "$PRGNAME shows basic disk info\n"
+  printf "Syntax:\n"
+  printf "  $PRGNAME [ -c ] [ -H ] [ DISK ...]\n"
+  printf "  $PRGNAME -h\n"
+  printf "\n"
+  printf "Options:\n"
+  printf "  -c   -- Compact\n"
+  printf "  -H   -- No header\n"
+  printf "  -h   -- Shows this help\n"
+}
+
+PrintHeader () {
+  if $HEADER ; then
+    $COMPACT && printf "%s %s %s %s %s\n" "LUN" "DISK" "SIZE" "VUID" "VOLUME" || printf "%3s %-12s %10s %-32s %-32s\n" "LUN" "DISK" "SIZE" "VUID" "VOLUME"
+  fi
+}
+
+GetDiskInfo() { [ -n "$DEBUG" ] && $DEBUG && set -x
+  LUN=$(lsattr -El $DISK -F value -a lun_id | sed 's/............$//')
+  DISKINFO=$(lsmpio -ql "$DISK" | awk '
+    $1=="Capacity:"      {printf("%s ",$2)}
+    $1=="Volume" {
+      if($2=="Name:") {printf("%s ", $3)}
+      if($2=="Serial:") {printf("%s", $3)}
+    }
+  ')
+  if $COMPACT ; then
+    printf "%s %s %s\n" $(( $LUN )) "$DISK" "$DISKINFO"
+  else
+    read -r DISKINFO1 DISKINFO2 DISKINFO3 <<< "$DISKINFO"
+    printf "%3s %-12s %10s %32s %-32s\n" $(( $LUN )) "$DISK" "$DISKINFO1" "$DISKINFO3" "$DISKINFO2"
+  fi
+}
+
+if [ $# -gt 0 ] ; then
+  while getopts :chH OPT "$@" ; do
+    case "$OPT" in
+      (h) ShowSyntax >&2 ; exit 0;;
+      (c) COMPACT=true ;;
+      (H) HEADER=false ;;
+    esac
+  done
+  shift $(expr $OPTIND - 1)
+  
+  if [ $# -gt 0 ] ; then
+    PrintHeader
+    for DISK in "$@" ; do
+      GetDiskInfo "$DISK"
+    done
+  else
+    PrintHeader
+    for DISK in $(lsdev -c disk -S Available -F name | sort -u) ; do
+      GetDiskInfo "$DISK"
+    done
+  fi
+else
+  PrintHeader
+  for DISK in $(lsdev -c disk -S Available -F name | sort -u) ; do
+    GetDiskInfo "$DISK"
+  done
+fi

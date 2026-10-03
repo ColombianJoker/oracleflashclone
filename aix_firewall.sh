@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 
 CheckAIXFirewall () { [ -n "$DEBUG" ] && $DEBUG && set -x
     STATUS=$(lsdev -Cc ipsec -F name:status | grep _v4)
@@ -25,8 +25,9 @@ CleanRulesToBlockOut () { [ -n "$DEBUG" ] && $DEBUG && set -x
         printf "$PRGNAME: No rules found with description: '$RULE_TAG'\n" >&2
     else
         # Loop through and remove each rule by its Filter ID (FID)
+        printf "$PRGNAME: Removing found old rules...\n" >&2
         for FID in $RULE_IDS; do
-            printf "$PRGNAME: Removing filter rule $FID...\n" >&2
+            # printf "$PRGNAME: Removing filter rule $FID...\n" >&2
             rmfilt -v 4 -n "$FID" >/dev/null
         done
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/usr/bin/env ksh93
 
 if [ ! -n "$STORAGEHOSTNAME" ] ; then
     if [ ! -n "$HOST" ] ; then
