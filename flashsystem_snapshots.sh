@@ -1,14 +1,35 @@
 #!/usr/bin/env ksh93
 
 CheckFlashSystem () { [ -n "$DEBUG" ] && $DEBUG && set -x
-    if ssh -o ConnectTimeout=5 "$STORAGEDEF" lsnodecanister >/dev/null 2>&1 ; then
-        true
+    if ssh -o ConnectTimeout=5 "$STORAGEDEF" lssystem >/dev/null 2>&1 ; then
+        UnprotectUnmap
+        return 0
     else
         set +x
         printf "$PRGNAME: *****************************************************\n" >&2
         printf "$PRGNAME: * %-50s*\n" "Can't connect to '$STORAGEDEF', exiting ..." >&2
         printf "$PRGNAME: *****************************************************\n" >&2
         exit 255
+    fi
+}
+
+UnprotectUnmap () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Change vdiskprotectionenabled to no
+    export UNMAP_UNPROTECT="${UNMAP_UNPROTECT:=false}"
+    if $UNMAP_UNPROTECT ; then
+        export UNMAP_PROTECTION=$(ssh "$STORAGEDEF" lssystem |
+                awk '$1=="vdisk_protection_enabled" {print $2}'
+            )
+        if [ "$UNMAP_PROTECTION" = "yes" ] ; then
+            ssh "$STORAGEDEF" chsystem -vdiskprotectionenabled no >/dev/null
+        fi
+    fi
+}
+
+ProtectUnmap () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Change vdiskprotectionenabled to yes
+    if [ "$UNMAP_PROTECTION" = "yes" ] && $UNMAP_UNPROTECT ; then
+        ssh "$STORAGEDEF" chsystem -vdiskprotectionenabled yes >/dev/null
     fi
 }
 
@@ -25,18 +46,29 @@ CheckSnapshotExistence () { [ -n "$DEBUG" ] && $DEBUG && set -x
     fi
 }
 
-AddSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
+AddVolumeGroupSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Create a snapshot of volumegroup $1 with name $2
     if [ $# -lt 2 ] ; then
-        false
+        return 1
     else
-        VGNAME="$1" SNAPNAME="$2"
-        ssh "$STORAGEDEF" addsnapshot -volumegroup "$VGNAME" -name "$SNAPNAME"
+        typeset VGNAME="$1" SNAPNAME="$2"
+        typeset RETENTION="-retentionminutes 15"
+        ssh "$STORAGEDEF" addsnapshot -volumegroup "$VGNAME" -name "$SNAPNAME" $RETENTION >/dev/null
         if CheckSnapshotExistence "$SNAPNAME" ; then
-            true
+            return 0
         else
-            false
+            return 1
         fi
+    fi
+}
+
+AddThinVolumeVolumeGroup () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Create a thin clone of a volumegroup snapshot
+    if [ $# -lt 2 ] ; then
+        exit 1
+    else
+        typeset VGNAME="$1" SNAPNAME="$2"
+        ssh "$STORAGEDEF" mkvolumegroup -name "$SNAPNAME" -type thinclone -fromsourcegroup "$VGNAME" -snapshot "$SNAPNAME" >/dev/null
     fi
 }
 

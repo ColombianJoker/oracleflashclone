@@ -11,6 +11,15 @@ else
     exit 3
 fi
 
+HELPSCRIPT="${SCRIPTDIR}/clone_help"
+if [ -f "$HELPSCRIPT" ] && [ -r "$HELPSCRIPT" ] && [ -x "$HELPSCRIPT" ] ; then
+    . "$HELPSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the help, exiting...\n" >&2
+    exit 3
+fi
+
 SNAPSHOTSCRIPT="${SCRIPTDIR}/flashsystem_snapshots"
 if [ -f "$SNAPSHOTSCRIPT" ] && [ -r "$SNAPSHOTSCRIPT" ] && [ -x "$SNAPSHOTSCRIPT" ] ; then
     . "$SNAPSHOTSCRIPT"

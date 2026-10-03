@@ -27,9 +27,9 @@ ListFilteredMappedVolumes () { [ -n "$DEBUG" ] && $DEBUG && set -x
     if [ $# -lt 2 ] ; then
         false
     else
-        STORAGEHOST="$1" PREFIX="$2"
+        typeset UNUSED="$1" PREFIX="$2"
         ssh "$STORAGEDEF" lshostvdiskmap -nohdr -delim : "$STORAGEHOSTNAME" |
-            awk -F: -v PREFIX="^$PREFIX" '$5~PREFIX{print $5}'
+            awk -F: -v PREFIX="^$PREFIX" '$5 ~ PREFIX { print $5 }'
     fi
 }
 
@@ -53,10 +53,27 @@ MapVolumes () { [ -n "$DEBUG" ] && $DEBUG && set -x
     else
         typeset -i LUN=$START_LUN
         for VOL in "$@" ; do
-            ssh "$STORAGEDEF" mkvdiskhostmap -host "$STORAGEHOSTNAME" -scsi "$LUN" "$VOL" >/dev/null 2>&1 && printf "$PRGNAME: $VOL mapped.\n" >&2
-            let LUN=LUN+1
+            ssh "$STORAGEDEF" mkvdiskhostmap -host "$STORAGEHOSTNAME" -scsi "$LUN" "$VOL" >/dev/null 2>&1 && let LUN=LUN+1
         done
     fi
+}
+
+GetVolumes () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Get the list of volumes for all given disks
+    if [ $# -eq 0 ] ; then
+        return 1
+    else
+        for DISK in "$@" ; do
+            GetVolumeForDisk "$DISK"
+        done
+    fi
+}
+
+UnmapVolumes () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Unmap all volumes given
+    for VOL in "$@" ; do
+        ssh "$STORAGEDEF" rmvdiskhostmap -host "$STORAGEHOSTNAME" "$VOL" >/dev/null
+    done
 }
 
 ### --------- --------- --------- ---------

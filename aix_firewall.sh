@@ -22,18 +22,20 @@ CleanRulesToBlockOut () { [ -n "$DEBUG" ] && $DEBUG && set -x
         }
     }' | sort -rn)
     if [[ -z "$RULE_IDS" ]]; then
-        printf "$PRGNAME: No rules found with description: '$RULE_TAG'\n" >&2
+        printf "$PRGNAME: No firewall rules found with description: '$RULE_TAG'\n" >&2
     else
         # Loop through and remove each rule by its Filter ID (FID)
-        printf "$PRGNAME: Removing found old rules...\n" >&2
+        printf "$PRGNAME: Removing old firewall rules..." >&2
         for FID in $RULE_IDS; do
             # printf "$PRGNAME: Removing filter rule $FID...\n" >&2
             rmfilt -v 4 -n "$FID" >/dev/null
         done
+        printf " done\n" >&2
 
         # Apply changes to the active kernel rules
-        printf "$PRGNAME: Deactivating removed rules from kernel...\n" >&2
+        printf "$PRGNAME: Deactivating removed rules from kernel..." >&2
         mkfilt -v 4 -u
+        printf " done\n" >&2
     fi
 }
 
@@ -41,7 +43,7 @@ AddRulesToBlockOut () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Blocks OUTbound connections to ports in $CLUSTERPORS on servers in $CLUSTERNODES
     for NODE in $CLUSTERNODES ; do
         for PORT in $CLUSTERPORTS; do
-            printf "$PRGNAME: Blocking outbound connections to $NODE:$PORT/tcp...\n" >&2
+            printf "$PRGNAME: Blocking outbound connections to $NODE:$PORT/tcp..." >&2
             # -v 4                  : Version TCPv4
             # -a D                  : Action Deny
             # -s 0.0.0.0 -m 0.0.0.0 : Any local source IP
@@ -50,11 +52,13 @@ AddRulesToBlockOut () { [ -n "$DEBUG" ] && $DEBUG && set -x
             # -w O                  : Outbound
             # -D DESCRIPTION        : Description
             genfilt -v 4 -a D -s 0.0.0.0 -m 0.0.0.0 -d "$NODE" -M 255.255.255.255 -c tcp -O eq -P "$PORT" -w O -D "$RULE_TAG" >/dev/null
+            printf " done\n" >&2
         done
     done
     # Activate
-    printf "$PRGNAME: Activating in-kernel firewall with new rules...\n" >&2
+    printf "$PRGNAME: Activating in-kernel firewall with new rules..." >&2
     mkfilt -v 4 -u
+    printf " done\n" >&2
 }
 
 ### --------- --------- --------- ---------

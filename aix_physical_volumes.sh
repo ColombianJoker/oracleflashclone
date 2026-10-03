@@ -13,15 +13,20 @@ DetectAIXDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Detect all disks
     printf "$PRGNAME: Scanning..." >&2
     cfgmgr
+    printf " done\n" >&2
 }
 
-ListSnapshotDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
+ListSnapshotVolumes () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # List disks coming from volumes matching a prefix
     if [ $# -eq 0 ] ; then
         return 1
     else
-        typeset PREF="$1"
-        lsmpio -q | awk -v PREF="^$PREF" '$NF~PREF{print $1, $NF}'
+        for DISK in $@ ; do
+            lsmpio -ql "$DISK" | awk -v PREF="^$VOLUMEPREFIX" -v SRC="$SOURCECLUSTER" '
+                BEGIN {PRE= PREF SRC}
+                $NF ~ PRE {print $NF}
+            '
+        done | sed 's/\n/ /g'
     fi
 }
 
@@ -66,11 +71,9 @@ RemoveDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
     if [ $# -eq 0 ] ; then
         return 1
     else
-        printf "$PRGNAME: Removing disks..." >&2
         for DISK in "$@" ; do
             rmdev -dl "$DISK" >/dev/null
         done
-        printf " done.\n" >&2
     fi
 }
 
@@ -80,23 +83,25 @@ GetVolumeForDisk () { [ -n "$DEBUG" ] && $DEBUG && set -x
         return 1
     else
         typeset DISK="$1"
-        lsmpio -ql "$DISK" | awk '
-            $1=="Volume" && $2=="Name:" { print $3}
+        lsmpio -ql "$DISK"  2>/dev/null | awk '
+            $1=="Volume" && $2=="Name:" { print $3 }
         '
     fi
 }
 
 RenameClonedDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
 # Rename cloned disks to avoid conflicts with source disks
+    typeset -i COUNT=0
     for DISK in "$@" ; do
         typeset VOLUME=$(GetVolumeForDisk "$DISK")
         if [ -n "$VOLUME" ] ; then
             typeset CALCULATED=$(CalculateHdiskName "$VOLUME")
             if [ -n "$CALCULATED" ] && [ "$CALCULATED" != "$DISK" ] ; then
-                rendev -l "$DISK" -n "$CALCULATED" >/dev/null 2>&1 && printf "$PRGNAME: $DISK -> $CALCULATED\n" >&2
+                rendev -l "$DISK" -n "$CALCULATED" >/dev/null 2>&1 && let COUNT=COUNT+1
             fi
         fi
     done
+    printf "$PRGNAME: $COUNT disks renamed\n" >&2
 }
 
 AdjustClonedDisks () { [ -n "$DEBUG" ] && $DEBUG && set -x
