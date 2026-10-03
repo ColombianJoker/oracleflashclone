@@ -40,6 +40,15 @@ AddSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
     fi
 }
 
+GetLastSnapVolumeGroup () { [ -n "$DEBUG" ] && $DEBUG && set -x
+# Get name of last volume group matching prefix and host
+    ssh "$STORAGEDEF" lsvolumegroup -delim : -nohdr |
+        awk -F: -v PREF="^$VOLUMEPREFIX" -v HOST="$STORAGEHOSTNAME" '
+            BEGIN { PRE= PREF HOST "_[0-9][0-9]*$" }
+            $2 ~ PRE { print $2 }
+        ' | tail -n 1
+}
+
 ### --------- --------- --------- ---------
 Loaded () {
     printf "$PRGNAME: flashsystem snapshot functions loaded.\n" >&2

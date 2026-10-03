@@ -29,20 +29,24 @@ PrintConfiguration () {
   printf "  DEBUG=$DEBUG\n"
   printf "  STORAGEDEF=$STORAGEDEF\n"
   printf "  VOLUMEGROUP=$VOLUMEGROUP\n"
+  printf "  SOURCECLUSTER=$SOURCECLUSTER\n"
   printf "  VOLUMEPREFIX=$VOLUMEPREFIX\n"
   printf "  HDISKPREFIX=$HDISKPREFIX\n"
   printf "  CLUSTERNODES=$CLUSTERNODES\n"
   printf "  CLUSTERPORTS=$CLUSTERPORTS\n"
+  printf "  OWNERSHIP=$OWNERSHIP\n"
 }
 
 [ -n "$DEBUG" ] && $DEBUG && set -x
 
 if [ -n "$1" ] && [ "$1" == "do" ] ; then
     if [ -n "$2" ] ; then
-        printf "$PRGNAME: Trying to use '$2' for configuration...\n" >&2
+        printf "$PRGNAME: Trying to use '$2' for configuration..." >&2
         if [ -f "$2" ] && [ -r "$2" ] && [ -x "$2" ] ; then
+            printf " found.\n" >&2
             . "$2"
         else
+            printf "\n" >&2
             printf "$PRGNAME: Could not use '$2', check existence, and rx mode...\n" >&2
             exit 1
         fi
@@ -53,13 +57,34 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     fi
 
     # ------------ MAIN ------------
-    printf "$PRGNAME: Scanning..." >&2
     DetectAIXDisks
     printf " done\n" >&2
-    printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
-    ListSnapshotDisks "$VOLUMEPREFIX" | while read hdiskname volname ; do
-        printf "$volname\t%s\n" $(CalculateHdiskName $volname) >&2
-    done
+    # printf "$PRGNAME: Mapped disks -----------------------------------------------\n" >&2
+    # ListSnapshotDisks "$VOLUMEPREFIX" | while read hdiskname volname ; do
+    #     printf "$volname\t%s\n" $(CalculateHdiskName $volname) >&2
+    # done
+    CLONED_DISKS=$(ListClonedDisks)
+    if [ -n "$CLONED_DISKS" ] ; then
+        printf "$PRGNAME: Old cloned disks found mapped, removing...\n" >&2
+        RemoveDisks $CLONED_DISKS
+    fi
+    export START_LUN=$(( $(GetMaxLUN) + ${LUNDELTA:=10} ))
+    # printf "%s: New LUN start: %d\n" "$PRGNAME" "$START_LUN" >&2
+    LAST_VG_SNAP=$(GetLastSnapVolumeGroup)
+    if [ -n "$LAST_VG_SNAP" ] ; then
+        printf "$PRGNAME: Last snapshot volume group found: $LAST_VG_SNAP\n" >&2
+        VOLUMES_TO_MAP=$(ListVolumePopulation "$LAST_VG_SNAP")
+        MapVolumes $VOLUMES_TO_MAP
+        DetectAIXDisks
+        CLONED_DISKS=$(ListClonedDisks)
+        if [ -n "$CLONED_DISKS" ] ; then
+            RenameClonedDisks $CLONED_DISKS
+        fi
+        CLONED_DISKS=$(ListClonedDisks) # Names changed
+        if [ -n "$CLONED_DISKS" ] ; then
+            AdjustClonedDisks $CLONED_DISKS
+        fi
+    fi
     CleanRulesToBlockOut
     AddRulesToBlockOut
 elif [ -n "$1" ] ; then
