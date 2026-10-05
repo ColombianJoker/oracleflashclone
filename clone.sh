@@ -18,7 +18,7 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     if [ -n "$2" ] ; then
         printf "$PRGNAME: Trying to use '$2' for configuration..." >&2
         if [ -f "$2" ] && [ -r "$2" ] && [ -x "$2" ] ; then
-            printf " done.\n" >&2
+            printf " done\n" >&2
             . "$2"
         else
             printf "\n" >&2
@@ -89,8 +89,8 @@ if [ -n "$1" ] && [ "$1" == "do" ] ; then
     fi
     CleanRulesToBlockOut
     AddRulesToBlockOut
-elif [ -n "$1" ] ; then
-    . "$2"
+elif [ $# -eq 1 ] ; then
+    . "$1"
     PrintConfiguration
     exit 0
 else
