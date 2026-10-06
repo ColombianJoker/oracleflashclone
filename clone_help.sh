@@ -23,6 +23,9 @@ PrintConfiguration () {
   printf "  CLUSTERNODES=$CLUSTERNODES\n"
   printf "  CLUSTERPORTS=$CLUSTERPORTS\n"
   printf "  RAWOWNER=$RAWOWNER\n"
+  if [ "$PRE_COMMAND" != "oraclone_pre_command" ] ; then
+      printf "  PRE_COMMAND=$PRE_COMMAND\n"
+  fi
 }
 
 ### --------- --------- --------- ---------

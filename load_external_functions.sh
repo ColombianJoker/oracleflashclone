@@ -65,6 +65,15 @@ else
     exit 3
 fi
 
+EXTSCRIPT="${SCRIPTDIR}/external_tools"
+if [ -f "$EXTSCRIPT" ] && [ -r "$EXTSCRIPT" ] && [ -x "$EXTSCRIPT" ] ; then
+    . "$EXTSCRIPT"
+    [ -n "$DEBUG" ] && $DEBUG && Loaded
+else
+    printf "$PRGNAME: Could not load the external tools script, exiting...\n" >&2
+    exit 3
+fi
+
 ### --------- --------- --------- ---------
 Loaded () {
     printf "$PRGNAME: External functions loaded.\n" >&2

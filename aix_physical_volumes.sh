@@ -37,10 +37,10 @@ CalculateHdiskName () { [ -n "$DEBUG" ] && $DEBUG && set -x
     else
         typeset BASENAME="${BASENAME:=hdisk}"
         typeset VOL="$1"
-        typeset VOL="${VOL%-[0-9]?([0-9])}" # Remove -XX part
-        typeset LASTPART="${VOL##*_}"
-        typeset LETTER="${LASTPART:0:1}"
-        typeset NUMBERS="${LASTPART##*[^0-9]}"
+        typeset VOL="${VOL%-[0-9]?([0-9])}"     # Remove -XX part
+        typeset LASTPART="${VOL##*_}"           # Parte2_
+        typeset LETTER="${LASTPART:0:1}"        # P
+        typeset NUMBERS="${LASTPART##*[^0-9]}"  # 2
         typeset NEWNAME="${HDISKPREFIX}${LETTER}${BASENAME}${NUMBERS}"
         echo "$NEWNAME"
     fi

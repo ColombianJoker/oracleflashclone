@@ -52,7 +52,7 @@ AddVolumeGroupSnapshot () { [ -n "$DEBUG" ] && $DEBUG && set -x
         return 1
     else
         typeset VGNAME="$1" SNAPNAME="$2"
-        typeset RETENTION="-retentionminutes 15"
+        typeset RETENTION="-retentionminutes 10"
         ssh "$STORAGEDEF" addsnapshot -volumegroup "$VGNAME" -name "$SNAPNAME" $RETENTION >/dev/null
         if CheckSnapshotExistence "$SNAPNAME" ; then
             return 0
